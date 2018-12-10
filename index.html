@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>eHealth Africa - Team and Timezone</title>
+
+    <style>
+        #africaCountries {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        }
+
+        #africaCountries td, #africaCountries th {
+        border: 1px solid #ddd;
+        padding: 8px;
+        }
+
+        #africaCountries tr:nth-child(even){background-color: #f2f2f2;}
+
+        #africaCountries tr:hover {background-color: #ddd;}
+
+        #africaCountries th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: left;
+        background-color: #0095ff;
+        color: white;
+        }
+
+        #africaCountries tr.green{
+            background-color: #4CAF50;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+
+    <h1>Africa countries</h1>
+    <table id="africaCountries">
+        <thead>
+            <th>name</th>
+            <th>capital</th>
+            <th>population</th>
+            <th>time zones</th>
+            <th>flag (image).</th>
+        </thead>
+        <tbody>
+
+        </tbody>
+    </table>
+    <script>
+        
+        function createNode(element) {
+            return document.createElement(element); // Create the type of element you pass in the parameters
+        }
+
+        function append(parent, el) {
+            return parent.appendChild(el); // Append the second parameter(element) to the first one
+        }
+        
+        function isCloseCountryToUser(countryUTC) {
+            countryUTC = countryUTC.substring(3);
+            
+            let userDate = new Date();
+            let userTimezoneToInt = userDate.getTimezoneOffset() / -60;
+            
+            let countryUTCToInt = 0;
+
+            if(countryUTC.length > 0){
+                countryUTCToInt = parseInt(countryUTC.substring(0,3));   
+            }
+
+            return countryUTCToInt + 1 === userTimezoneToInt || countryUTCToInt - 1 === userTimezoneToInt;
+            
+            
+        }
+        
+        
+
+        let africaCountries = document.querySelector("table#africaCountries > tbody");
+        
+        let url = "https://restcountries.eu/rest/v2/region/africa";
+
+
+        fetch(url)
+        .then((resp) => resp.json())
+        .then(function(data) {
+            let countries = data;
+            
+            return countries.map(function(country) { // Map through the results and for each run the code below
+                    console.log(country);
+                    let tr  = createNode('tr'),
+                        td_name  = createNode('td'), //  Create the elements we need
+                        td_capital  = createNode('td'), //  Create the elements we need
+                        td_population  = createNode('td'), //  Create the elements we need
+                        td_timezone  = createNode('td'), //  Create the elements we need
+                        td_flag  = createNode('td'), //  Create the elements we need
+                        img = createNode('img');
+                    
+                        td_name.innerHTML = `${country.name}`;
+                        td_capital.innerHTML = `${country.capital}`;
+                        td_population.innerHTML = `${country.population}`;
+                        td_timezone.innerHTML = `${country.timezones[0]}`;
+                        img.src = `${country.flag}`;  
+                        img.width = 50;  
+                        
+                        if(isCloseCountryToUser(country.timezones[0])){
+                            tr.className = 'green';
+                        }
+                        append(tr, td_name); 
+                        append(tr, td_capital); 
+                        append(tr, td_population); 
+                        append(tr, td_timezone); 
+                        append(td_flag, img);
+                        append(tr, td_flag); 
+                        append(africaCountries, tr);
+                })
+                    
+        })
+        .catch(function(error) {
+            // If there is any error you will catch them here
+        });  
+
+
+
+
+
+    
+    </script>
+</body>
+</html>
