@@ -38,6 +38,14 @@
 <body>
 
 
+    <div class="container">
+        <!-- Map html - add the below to your page -->
+        <div class="jsmaps-wrapper" id="africa-map"></div>
+        <!-- End Map html -->
+    </div>
+    
+
+
     <h1>Africa countries</h1>
     <table id="africaCountries">
         <thead>
@@ -51,84 +59,135 @@
 
         </tbody>
     </table>
-    <script>
-        
-        function createNode(element) {
-            return document.createElement(element); // Create the type of element you pass in the parameters
-        }
-
-        function append(parent, el) {
-            return parent.appendChild(el); // Append the second parameter(element) to the first one
-        }
-        
-        function isCloseCountryToUser(countryUTC) {
-            countryUTC = countryUTC.substring(3);
-            
-            let userDate = new Date();
-            let userTimezoneToInt = userDate.getTimezoneOffset() / -60;
-            
-            let countryUTCToInt = 0;
-
-            if(countryUTC.length > 0){
-                countryUTCToInt = parseInt(countryUTC.substring(0,3));   
-            }
-
-            return countryUTCToInt + 1 === userTimezoneToInt || countryUTCToInt - 1 === userTimezoneToInt;
-            
-            
-        }
-        
-        
-
-        let africaCountries = document.querySelector("table#africaCountries > tbody");
-        
-        let url = "https://restcountries.eu/rest/v2/region/africa";
-
-
-        fetch(url)
-        .then((resp) => resp.json())
-        .then(function(data) {
-            let countries = data;
-            
-            return countries.map(function(country) { // Map through the results and for each run the code below
-                    console.log(country);
-                    let tr  = createNode('tr'),
-                        td_name  = createNode('td'), //  Create the elements we need
-                        td_capital  = createNode('td'), //  Create the elements we need
-                        td_population  = createNode('td'), //  Create the elements we need
-                        td_timezone  = createNode('td'), //  Create the elements we need
-                        td_flag  = createNode('td'), //  Create the elements we need
-                        img = createNode('img');
-                    
-                        td_name.innerHTML = `${country.name}`;
-                        td_capital.innerHTML = `${country.capital}`;
-                        td_population.innerHTML = `${country.population}`;
-                        td_timezone.innerHTML = `${country.timezones[0]}`;
-                        img.src = `${country.flag}`;  
-                        img.width = 50;  
-                        
-                        if(isCloseCountryToUser(country.timezones[0])){
-                            tr.className = 'green';
-                        }
-                        append(tr, td_name); 
-                        append(tr, td_capital); 
-                        append(tr, td_population); 
-                        append(tr, td_timezone); 
-                        append(td_flag, img);
-                        append(tr, td_flag); 
-                        append(africaCountries, tr);
-                })
-                    
-        })
-        .catch(function(error) {
-            // If there is any error you will catch them here
-        });  
-
-
-
 
 
     
+  <!-- Jquery is required, embed on your page if not already - don't embed 2 versions -->
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js" type="text/javascript"></script>
+  <!-- End Jquery -->
+
+  <!-- Map scripts - add the below to your page -->
+  <!-- jsmaps-panzoom.js is optional if you are using enablePanZoom -->
+  <link href="jsmaps/jsmaps.css" rel="stylesheet" type="text/css" />
+  <script src="jsmaps/jsmaps-libs.js" type="text/javascript"></script>
+  <script src="jsmaps/jsmaps-panzoom.js"></script>
+  <script src="jsmaps/jsmaps.min.js" type="text/javascript"></script>
+  <script src="maps/africa.js" type="text/javascript"></script>
+  <!-- End Map scripts -->
+
+<script>
+
+    let timezones = [];
+
+    var ages = [3, 10, 18, 20];
+
+    function findCountryWithCode(country, code) {
+       return country.abbreviation === code;
+    }
+
+    function checkAdult(age) {
+        return age >= 18;
+    }
+
+    function myFunction() {
+        document.getElementById("demo").innerHTML = ages.findIndex(checkAdult);
+    }
+    
+    function createNode(element) {
+        return document.createElement(element); // Create the type of element you pass in the parameters
+    }
+
+    function append(parent, el) {
+        return parent.appendChild(el); // Append the second parameter(element) to the first one
+    }
+    
+    function isCloseCountryToUser(countryUTC) {
+        countryUTC = countryUTC.substring(3);
+        
+        let userDate = new Date();
+        let userTimezoneToInt = userDate.getTimezoneOffset() / -60;
+        
+        let countryUTCToInt = 0;
+
+        if(countryUTC.length > 0){
+            countryUTCToInt = parseInt(countryUTC.substring(0,3));   
+        }
+
+        return countryUTCToInt + 1 === userTimezoneToInt || countryUTCToInt - 1 === userTimezoneToInt;
+        
+        
+    }
+    
+    
+
+    let africaCountries = document.querySelector("table#africaCountries > tbody");
+    
+    let url = "https://restcountries.eu/rest/v2/region/africa";
+
+
+    fetch(url)
+    .then((resp) => resp.json())
+    .then(function(data) {
+
+        let countries = data;
+        
+        timezones = countries.map(country => country.timezones[0]);
+
+        timezones = [...new Set(timezones)];
+        
+        console.log(timezones);
+        
+        countries.map(function(country) { // Map through the results and for each run the code below
+                console.log(country);
+                let tr  = createNode('tr'),
+                    td_name  = createNode('td'), //  Create the elements we need
+                    td_capital  = createNode('td'), //  Create the elements we need
+                    td_population  = createNode('td'), //  Create the elements we need
+                    td_timezone  = createNode('td'), //  Create the elements we need
+                    td_flag  = createNode('td'), //  Create the elements we need
+                    img = createNode('img');
+                
+                    td_name.innerHTML = `${country.name}`;
+                    td_capital.innerHTML = `${country.capital}`;
+                    td_population.innerHTML = `${country.population}`;
+                    td_timezone.innerHTML = `${country.timezones[0]}`;
+                    img.src = `${country.flag}`;  
+                    img.width = 50;  
+                    
+                    if(isCloseCountryToUser(country.timezones[0])){
+                        tr.className = 'green';
+                    }
+                    append(tr, td_name); 
+                    append(tr, td_capital); 
+                    append(tr, td_population); 
+                    append(tr, td_timezone); 
+                    append(td_flag, img);
+                    append(tr, td_flag); 
+                    append(africaCountries, tr);
+        
+            })
+
+
+            
+                
+    })
+    .catch(function(error) {
+        // If there is any error you will catch them here
+    });  
+
+</script>
+
+    <script type="text/javascript">
+       
+       $(document).ready(function(){
+            $('#africa-map').JSMaps({
+                map: 'africa'
+            });
+       })
+       
+
     </script>
+
+
 </body>
 </html>
